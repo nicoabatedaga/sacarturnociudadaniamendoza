@@ -2,9 +2,10 @@ from logging import exception
 import os
 import signal
 import time
+import pytz
 
 import telegram
-import telebot
+from datetime import datetime
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -75,8 +76,8 @@ def message_listener(wait):
     updater = Updater(TELEGRAM_BOT_TOKEN, use_context=True)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(MessageHandler(Filters.text, fill_captcha))
-    updater.start_polling()
-    updater.idle()
+    updater.start_polling(poll_interval=0, timeout=30000000)
+    updater.idle(signal.SIGINT)
 
 def go_to_form(wait):
     time.sleep(1)  # wait below is not working
@@ -103,7 +104,6 @@ def check_if_logout():
 def check_and_refresh_free_days_on_calendar():
     libres = []
     while not libres:
-        time.sleep(1)
         driver.refresh()
         if check_if_logout():
             return False
@@ -141,5 +141,7 @@ def begin_process():
 
 
 if __name__ == "__main__":
+    # now = datetime.now().astimezone()
+    # while 
     bot.send_message(text="-----------------------\nEmpezando para: "+USUARIO, chat_id=TELEGRAM_BOT_CHANNEL)
     begin_process()
